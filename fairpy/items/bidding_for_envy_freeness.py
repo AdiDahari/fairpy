@@ -13,6 +13,9 @@ Since: 2022-12
 
 from fairpy import ValuationMatrix
 
+import concurrent.futures
+WORKERS = 4
+
 import networkx as nx
 import numpy as np
 import pprint
@@ -194,11 +197,16 @@ class BiddingForEnvyFreeness:
         elif not isinstance(matrix, ValuationMatrix):
             matrix = ValuationMatrix(matrix)
         
-        # M is the diagonal sum of the matrix, which represents the sum of the players' bids for their allocated bundles
-        m = sum([matrix[Bi][Bi] for Bi in range(matrix.num_of_agents)])
+        with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as executor:
+            # Using Threads
+            # M is the diagonal sum of the matrix, which represents the sum of the players' bids for their allocated bundles
+            m = executor.submit(sum, [matrix[Bi][Bi] for Bi in range(matrix.num_of_agents)])
         
-        # C is the minimum sum of a row, which represents the minimum sum of single player's bids for all bundles
-        c = min([sum(matrix[ci]) for ci in range(matrix.num_of_agents)])
+            # C is the minimum sum of a row, which represents the minimum sum of single player's bids for all bundles
+            c = executor.submit(min, [sum(matrix[ci]) for ci in range(matrix.num_of_agents)])
+            
+        m = m.result()
+        c = c.result()        
         
         return m, c, m-c
     
@@ -286,10 +294,19 @@ class BiddingForEnvyFreeness:
             compansations = [max(assessment_matrix[player]) - assessment_matrix[player][player] if any([x > assessment_matrix[player][player] for x in assessment_matrix[player]]) else 0 for player in range(len(assessment_matrix)-1)]
             logger.debug(f'\n----------< DEBUG (compensation_procedure) >----------\nCompansations:\n{pprint.pformat(compansations)}\n------------------------------------------------------')
             
-           # adding the compansations to the assessment matrix
-            for compansation in range(len(compansations)):
-                # adding the compansation to the player's column
+            def compansate(compansation):
                 assessment_matrix[:, compansation] += compansations[compansation]
+            
+            # Using Threads
+            with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as executor:
+                [executor.submit(compansate, compansation) for compansation in range(len(compansations))]
+
+                
+            
+           # adding the compansations to the assessment matrix
+            # for compansation in range(len(compansations)):
+            #     # adding the compansation to the player's column
+            #     assessment_matrix[:, compansation] += compansations[compansation]
             logger.debug(f'\n----------< DEBUG (compensation_procedure) >----------\nCompensation procedure finished with assessment matrix:\n{pprint.pformat(assessment_matrix)}\n------------------------------------------------------')
             
             # if total discount is greater than MC, raise an exception
@@ -323,11 +340,11 @@ def bidding_for_envy_freeness(bidding_matrix: ValuationMatrix | list) -> dict:
 if __name__ == '__main__':
     import sys 
     import doctest
-    doctest.testmod()
+    # doctest.testmod()
     logger.addHandler(logging.StreamHandler(sys.stdout))
     # logger.setLevel(logging.INFO)
     
-    # matrix = ValuationMatrix([[50, 20, 10, 20], [60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30]])
+    matrix = ValuationMatrix([[50, 20, 10, 20], [60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30]])
     # matrix = ValuationMatrix([[60, 40, 15, 10], [50, 20, 10, 20], [0, 40, 25, 35], [50, 35, 10, 30]])
     # matrix = ValuationMatrix([[60, 40, 15, 10], [0, 40, 25, 35], [50, 20, 10, 20], [50, 35, 10, 30]])
     # matrix = ValuationMatrix([[60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30], [50, 20, 10, 20]])
@@ -336,7 +353,7 @@ if __name__ == '__main__':
     # matrix = ValuationMatrix([[25, 25, 25], [50, 40, 35], [10, 20, 25]])
     # matrix = ValuationMatrix([[50, 40, 35], [25, 25, 25], [10, 20, 25]])
     # matrix = ValuationMatrix([[10, 20, 25], [50, 40, 35], [25, 25, 25]])
-    # bfef = BiddingForEnvyFreeness(matrix)
+    # bfef = bidding_for_envy_freeness(matrix)
     
-    # print(bidding_for_envy_freeness(matrix))
+    # pprint.pprint(bidding_for_envy_freeness(matrix))
     # print(bfef.M, bfef.C, bfef.MC)
