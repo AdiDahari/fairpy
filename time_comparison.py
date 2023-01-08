@@ -4,42 +4,40 @@ import random # for random.randrange - random numbers within a range
 
 import time # for time.time - time measurement
 
-GITHUB_URL = 'https://github.com/AdiDahari/fairpy.git' # URL of the github repository
 
-BRANCHES = ['master', 'cython', 'Multi-Threading'] # branches to compare
 
-SIZES = [4, 10, 100, 200, 500, 1000, 2000] # matrix sizes to compare
+# def cython_prepare():
+#     '''
+#     Prepares the cython code for the time comparison.
+#     '''
+#     print('Preparing cython...')
+#     # compiles the cython code to c code
+#     os.system('cython cython_improvement/cy_compensation_procedure.pyx -o cython_improvement/cy_compensation_procedure.c')
 
-def intitalize_enviroment():
-    '''
-    Initializes the enviroment for the time comparison.
-    initializes a virtual enviroment, installs the requirements and installs fairpy enviroment.
-    '''
-    print('Initializing enviroment...')
-    os.system('virtualenv .venv') # creates a virtual enviroment
-    os.system('source .venv/bin/activate') # activates the virtual enviroment
+#     # compiles the c code to a shared library
+#     os.system('python cython_improvement/setup.py build_ext --inplace cython_improvement/')
 
-    os.system(f'pip install -r requirements.txt') # installs the requirements
-    os.system(f'pip install -e .') # installs fairpy
-
-def cython_prepare():
-    '''
-    Prepares the cython code for the time comparison.
-    '''
+def prepare_cython(): 
     print('Preparing cython...')
-    os.system('pip install cython') # installs cython
     # compiles the cython code to c code
-    os.system('cython -v fairpy/items/cy_compensation_procedure.pyx -o fairpy/items/cy_compensation_procedure.c')
+    os.system('cython -v cython_improvement/cy_compensation_procedure.pyx')
 
     # compiles the c code to a shared library
-    os.system('python3 fairpy/items/setup.py build_ext --inplace')
+    os.system('python cython_improvement/setup.py build_ext --inplace')
 
-def switch_branch(branch):
-    '''
-    Switches to a branch.
-    '''
-    print(f'Switching to branch: {branch}...')
-    os.system(f'git switch -f {branch}')
+prepare_cython()
+
+from fairpy.items.bidding_for_envy_freeness import bidding_for_envy_freeness as base
+
+from cython_improvement.bidding_for_envy_freeness import bidding_for_envy_freeness as cython_improvement
+
+from multithreading_improvement.bidding_for_envy_freeness import bidding_for_envy_freeness as multithreading_improvement
+
+GITHUB_URL = 'https://github.com/AdiDahari/fairpy.git' # URL of the github repository
+
+IMPLEMENTATIONS = ['base', 'cython', 'multithreading'] # branches to compare
+
+SIZES = [4, 10, 100, 200, 500] # matrix sizes to compare
 
 def create_bidding_matrix(n: int):
     '''
@@ -57,7 +55,7 @@ def create_bidding_matrix(n: int):
     
     return bidding_matrix
 
-def plot_times(times, branches=BRANCHES, sizes=SIZES):
+def plot_times(times, implementations = ['base', 'cython', 'multithreading'], sizes=SIZES):
     '''
     Plots the times of the time comparison.
     '''
@@ -65,8 +63,8 @@ def plot_times(times, branches=BRANCHES, sizes=SIZES):
     import matplotlib.pyplot as plt
 
     # plots the times
-    for index, branch in enumerate(branches):
-        plt.plot(sizes, times[index], label=branch)
+    for key in implementations:
+        plt.plot(sizes, times[key], label=key)
 
     # sets the plot's title, x and y labels and legend
     plt.xlabel('Matrix size')
@@ -76,11 +74,11 @@ def plot_times(times, branches=BRANCHES, sizes=SIZES):
     plt.legend()
     plt.show()
 
-def compare(branches=BRANCHES, sizes=SIZES):
+def compare(implementations=IMPLEMENTATIONS, sizes=SIZES):
     '''
     Runs the time comparison.
     '''
-    times = []  # list of times for each branch
+    times = {}  # list of times for each branch
 
     bidding_matrixes = [create_bidding_matrix(size) for size in sizes] # creates a random bidding matrix
 
@@ -88,31 +86,33 @@ def compare(branches=BRANCHES, sizes=SIZES):
 
     # intitalize_enviroment() # initializes the enviroment
     # runs the time comparison
-    for index, branch in enumerate(branches):
+
+    print(implementations)
+    for key in implementations:
 
         
-        times.append([])
-        switch_branch(branch)
+        times.setdefault(key, [])
 
-        if branch == 'cython':
-            cython_prepare()
-
-        print(f'Timimg branch: {branch}...')
+        print(f'Timimg implementation: {key}...')
 
         for bidding_matrix in bidding_matrixes:
-            from fairpy.items.bidding_for_envy_freeness import bidding_for_envy_freeness
-            
+
 
             start = time.time()
-            bidding_for_envy_freeness(bidding_matrix)
+            if key == 'base':
+                base(bidding_matrix=bidding_matrix)
+            elif key == 'multithreading':
+                multithreading_improvement(bidding_matrix=bidding_matrix)
+            else:
+                cython_improvement(bidding_matrix=bidding_matrix)
             end = time.time()
             
-            times[index].append(end - start)
+            times[key].append(end - start)
 
-    switch_branch('master')
-    plot_times(times, branches, sizes)
+    plot_times(times, implementations=implementations, sizes=sizes)
 
 if __name__ == '__main__':
-    # compare(branches=['master', 'cython']) # compares the master and cython branches
-    # compare(branches=['master', 'Multi-Threading']) # compares the master and Multi-Threading branches
+    # compare(implementations=['base', 'cython']) # compares the base and cython implementations
+    # compare(implementations=['base', 'multuthreading']) # compares the base and cython implementations
+    # compare(implementations=['cython', 'multuthreading']) # compares the base and cython implementations
     compare()
