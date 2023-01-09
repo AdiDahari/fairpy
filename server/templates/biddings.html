@@ -43,29 +43,5 @@
       </div>
       <input type="hidden" id="size" name="size" value="{{ size }}" />
     </form>
-    <!-- <form action="/bfef" method="post" class="form-control" style="width: 100%">
-      <div class="grid">
-        {% if size is defined %} {% for i in range(size) %}
-        <div class="container">
-          <div class="form-control">
-            <h3>Player {{ i+1 }}</h3>
-            {% for j in range(size) %}
-            <label for="player{{ i+1 }}_bundle{{ j+1 }}"
-              >Bundle {{ j+1 }}:</label
-            >
-            <input
-              type="number"
-              id="player{{ i+1 }}_bundle{{ j+1 }}"
-              name="player{{ i+1 }}_bundle{{ j+1 }}"
-              value="0"
-            /><br />
-            {% endfor %}
-          </div>
-        </div>
-        {% endfor %} {% endif %}
-      </div>
-      <input type="hidden" id="size" name="size" value="{{ size }}" />
-      <button>Submit</button>
-    </form> -->
   </body>
 </html>
