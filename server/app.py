@@ -1,0 +1,42 @@
+import json
+from flask import Flask, render_template, jsonify, request
+import numpy as np
+from uuid import uuid4
+from fairpy.items.bidding_for_envy_freeness import bidding_for_envy_freeness
+
+class DictEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, dict):
+            return obj
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        return super(DictEncoder, self).default(obj)
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/biddings', methods=['POST'])
+def my_form_post():
+    print(f'Recieved size: {request.form["size"]}')
+    size = int(request.form['size'])
+    return render_template('biddings.html', size=size)
+
+@app.route('/bfef', methods=['POST'])
+def bfef():
+    size = int(request.form['size'])
+    data = []
+    for i in range(size):
+        data.append([int(request.form[f'player{i + 1}_bundle{j + 1}']) for j in range(size)])
+    # data = request.get_json()
+    print(f'Recieved Bidding matrix: {data}')
+    bfef = bidding_for_envy_freeness(data)
+    return json.dumps(bfef, cls=DictEncoder)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

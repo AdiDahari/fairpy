@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+body {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 20px;
+    min-height: 100vh;
+    background: #5372F0;
+}
+
+.container {
+    min-width: 450px;
+    height: auto;
+    background: #fff;
+    border-radius: 7px;
+    justify-content: center;
+    align-items: center;
+}
+
+.container h2 {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 1.5rem;
+    color: #5372F0; 
+    
+}
+
+.container form {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 20px;
+}
+
+.container .form-control input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.container .form-control button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    background: #5372F0;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-color: #fff;
+    border-width: thin;
+    border-radius: 5px;
+    outline: none;
+    background: #256d1e;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+
+}
+
+.form-control {
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 20px;
+    padding: 20px 20px;
+    margin: 20px 20px;
+    border-radius: 7px;
+    align-items: center;
+}

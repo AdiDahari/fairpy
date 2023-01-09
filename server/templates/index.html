@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+    />
+    <title>Bidding For Envy Freeness</title>
+  </head>
+  <body>
+    <header
+      class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom"
+    >
+      <a
+        href="/"
+        class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
+      >
+        <svg class="bi me-2" width="40" height="32">
+          <use xlink:href="#bootstrap"></use>
+        </svg>
+        <span class="fs-4">Bidding For Envy Freeness</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a href="/" class="nav-link active" aria-current="page">Home</a>
+        </li>
+        <li class="nav-item"><a href="/about" class="nav-link">About</a></li>
+      </ul>
+    </header>
+    <div
+      class="modal modal-tour position-static d-block bg-secondary py-5"
+      tabindex="-1"
+      role="dialog"
+      id="modalTour"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-body p-5">
+            <h2 class="fw-bold mb-0">Enter Number of Players</h2>
+
+            <form action="/biddings" method="post" class="d-grid gap-4 my-5 list-unstyled">
+              <input
+                id="size"
+                name="size"
+                class="form-control form-control-lg"
+                type="number"
+                placeholder="Min. 2"
+                aria-label=".form-control-lg example"
+                min="2"
+                style="appearance: textfield"
+              />
+              <button
+              type="submit"
+              class="btn btn-lg btn-primary mt-5 w-100"
+              data-bs-dismiss="modal"
+              
+              >
+            </form>
+              Start Bidding
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>
