@@ -318,7 +318,7 @@ def bidding_for_envy_freeness(bidding_matrix: ValuationMatrix | list) -> dict:
     {2: {'bundle': 0, 'discount': 25}, 0: {'bundle': 1, 'discount': 10}, 1: {'bundle': 2, 'discount': 10}}
     '''
     bfef =  BiddingForEnvyFreeness(bidding_matrix)
-    return {player: {'bundle': index, 'discount': bfef.assessment_matrix[-1][index]} for index, player in enumerate(bfef.players_order)}
+    return {player: {'bundle': index, 'discount': bfef.assessment_matrix[-1][index], 'bid': bfef.players_bids_for_bundles[player][player]} for index, player in enumerate(bfef.players_order)}
         
 if __name__ == '__main__':
     import sys 

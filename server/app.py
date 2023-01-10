@@ -34,8 +34,12 @@ def bfef():
         data.append([int(request.form[f'player{i + 1}_bundle{j + 1}']) for j in range(size)])
     # data = request.get_json()
     print(f'Recieved Bidding matrix: {data}')
-    bfef = bidding_for_envy_freeness(data)
-    return json.dumps(bfef, cls=DictEncoder)
+    # bfef = bidding_for_envy_freeness(data)
+    # for debugging
+    bfef = bidding_for_envy_freeness([[50, 20, 10, 20], [60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30]])
+    print(bfef)
+    return render_template('results.html', bfef=bfef)
+
 
 
 if __name__ == '__main__':
