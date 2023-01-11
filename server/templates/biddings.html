@@ -31,6 +31,12 @@
       </ul>
     </header>
     <h1 class="mb-4 mt-4 text-info">Place Your Bids</h1>
+    <form action="/random" method="post">
+      <div class="d-grid mt-5 mb-5">
+        <button type="submit" class="btn btn-danger">Random Bids</button>
+        <input type="hidden" name="size" value="{{ size }}" />
+      </div>
+    </form>
     <form action="/bfef" method="post" class="container text-center">
       <div class="row row-cols-3">
         {% if size is defined %} {% for i in range(size) %}
@@ -48,7 +54,7 @@
                 name="player{{ i+1 }}_bundle{{ j+1 }}"
                 class="form-control form-control-lg"
                 placeholder="Bundle {{ j + 1 }}"
-                value="0"
+                value="{{ biddings[i][j] if biddings else 0 }}"
                 style="appearance: textfield"
               />
               {% endfor %}

@@ -1,7 +1,7 @@
 import json
 from flask import Flask, render_template, jsonify, request
 import numpy as np
-from uuid import uuid4
+import random
 from fairpy.items.bidding_for_envy_freeness import bidding_for_envy_freeness
 
 class DictEncoder(json.JSONEncoder):
@@ -26,6 +26,14 @@ def my_form_post():
     size = int(request.form['size'])
     return render_template('biddings.html', size=size)
 
+@app.route('/random', methods=['POST'])
+def random_bids():
+    print(request.form)
+    size = int(request.form['size'])
+    biddings = [[random.randrange(30, 60, 5) for j in range(size)] for i in range(size)]    
+    return render_template('biddings.html', size=size, biddings=biddings)
+    
+
 @app.route('/bfef', methods=['POST'])
 def bfef():
     size = int(request.form['size'])
@@ -34,9 +42,9 @@ def bfef():
         data.append([int(request.form[f'player{i + 1}_bundle{j + 1}']) for j in range(size)])
     # data = request.get_json()
     print(f'Recieved Bidding matrix: {data}')
-    # bfef = bidding_for_envy_freeness(data)
-    # for debugging
-    bfef = bidding_for_envy_freeness([[50, 20, 10, 20], [60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30]])
+    bfef = bidding_for_envy_freeness(data)
+    # # for debugging
+    # bfef = bidding_for_envy_freeness([[50, 20, 10, 20], [60, 40, 15, 10], [0, 40, 25, 35], [50, 35, 10, 30]])
     print(bfef)
     return render_template('results.html', bfef=bfef)
 
